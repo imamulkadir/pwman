@@ -1,6 +1,9 @@
-export const Card = ({ className, children, ...props }) => {
+import React from "react";
+
+export const Card = React.forwardRef(({ className, children, ...props }, ref) => {
   return (
     <div
+      ref={ref}
       className={`bg-gray-900 rounded-lg border border-gray-700 shadow-sm ${
         className || ""
       }`}
@@ -9,7 +12,7 @@ export const Card = ({ className, children, ...props }) => {
       {children}
     </div>
   );
-};
+});
 
 export const CardHeader = ({ className, children, ...props }) => {
   return (

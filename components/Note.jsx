@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { Label } from "./ui/Label";
@@ -11,75 +11,93 @@ import {
   DialogBody,
   DialogFooter,
 } from "./ui/Dialog";
-import { Edit3, Trash2, Copy, FileText, Palette } from "lucide-react";
+import { Edit3, Trash2, Copy, FileText } from "lucide-react";
 
-const NOTE_COLORS = [
-  "#FFFBEA", // Yellow
-  "#FFE4E1", // Pink
-  "#E0F7FF", // Blue
-  "#E8F5E9", // Green
-  "#F3E5F5", // Purple
-  "#FFFDE7", // Lime
-];
 
 export function NoteCard({ note, onEdit, onDelete }) {
   const [copied, setCopied] = useState(false);
+  const [showActions, setShowActions] = useState(false);
+  const cardRef = useRef(null);
 
-  const handleCopy = () => {
+  useEffect(() => {
+    if (!showActions) return;
+    const handleOutside = (e) => {
+      if (cardRef.current && !cardRef.current.contains(e.target)) {
+        setShowActions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("touchstart", handleOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("touchstart", handleOutside);
+    };
+  }, [showActions]);
+
+  const handleCopy = (e) => {
+    e.stopPropagation();
     const text = `${note.title}\n\n${note.content}`;
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleCardClick = () => {
+    if (window.matchMedia("(hover: none)").matches) {
+      setShowActions((prev) => !prev);
+    }
+  };
+
+  const actionsVisible = `flex gap-0.5 transition-opacity duration-150 flex-shrink-0 ml-2 ${
+    showActions ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+  }`;
+
   return (
     <Card
-      className="card-apple overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer group"
-      style={{ backgroundColor: note.color }}
+      ref={cardRef}
+      className="card-apple overflow-hidden group transition-all duration-200 cursor-pointer"
+      onClick={handleCardClick}
     >
-      <CardContent className="p-5 h-full flex flex-col">
-        <div className="flex-1 mb-4">
-          {note.title && (
-            <div className="flex items-center gap-2 mb-3">
-              <FileText className="w-4 h-4 text-gray-500" />
-              <h3 className="font-semibold text-gray-900 line-clamp-2">
-                {note.title}
-              </h3>
-            </div>
-          )}
-          <p className="text-sm text-gray-700 line-clamp-4 whitespace-pre-wrap">
-            {note.content}
-          </p>
+      <CardContent className="p-4">
+        {/* Header: icon + title + hover actions */}
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <FileText className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
+            <h3 className="font-semibold text-gray-100 text-sm truncate">
+              {note.title || "Untitled"}
+            </h3>
+          </div>
+
+          <div className={actionsVisible}>
+            <button
+              onClick={(e) => { e.stopPropagation(); onEdit(note); }}
+              className="h-7 w-7 rounded-lg flex items-center justify-center text-gray-500 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"
+              title="Edit"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={handleCopy}
+              className={`h-7 w-7 rounded-lg flex items-center justify-center transition-colors ${
+                copied ? "text-green-400" : "text-gray-500 hover:text-blue-400 hover:bg-blue-500/10"
+              }`}
+              title={copied ? "Copied!" : "Copy"}
+            >
+              <Copy className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onDelete(note.id); }}
+              className="h-7 w-7 rounded-lg flex items-center justify-center text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+              title="Delete"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
 
-        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onEdit(note)}
-            className="flex-1 btn-apple-outline"
-          >
-            <Edit3 className="w-4 h-4 mr-1" />
-            Edit
-          </Button>
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={handleCopy}
-            className="h-9 w-9 hover:bg-white/50"
-            title={copied ? "Copied!" : "Copy"}
-          >
-            <Copy className="w-4 h-4" />
-          </Button>
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={() => onDelete(note.id)}
-            className="h-9 w-9 text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
+        <p className="text-sm text-gray-400 line-clamp-4 whitespace-pre-wrap">
+          {note.content}
+        </p>
       </CardContent>
     </Card>
   );
@@ -103,18 +121,14 @@ export function AddNoteDialog({
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!open) return;
+    setError("");
     if (editingNote) {
-      setFormData(
-        editingNote || {
-          title: "",
-          content: "",
-          color: "#FFFBEA",
-        },
-      );
-    } else if (!open) {
+      setFormData({ title: "", content: "", color: "#FFFBEA", ...editingNote });
+    } else {
       setFormData({ title: "", content: "", color: "#FFFBEA" });
     }
-  }, [editingNote, open]);
+  }, [open, editingNote]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -180,28 +194,6 @@ export function AddNoteDialog({
                 rows={6}
                 className="input-apple w-full px-4 py-3 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent resize-none"
               />
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Palette className="w-4 h-4 text-gray-600" />
-                <Label>Color</Label>
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                {NOTE_COLORS.map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={() => setFormData({ ...formData, color })}
-                    className={`w-8 h-8 rounded-full border-2 transition-all duration-200 ${
-                      formData.color === color
-                        ? "border-gray-400 scale-110 shadow-md"
-                        : "border-gray-600 hover:scale-105"
-                    }`}
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
-              </div>
             </div>
 
             <DialogFooter>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { Label } from "./ui/Label";
@@ -57,15 +57,43 @@ function CredentialIcon({ url }) {
 export function CredentialCard({ credential, onEdit, onDelete, onCopy }) {
   const [showPassword, setShowPassword] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showActions, setShowActions] = useState(false);
+  const cardRef = useRef(null);
 
-  const handleCopyPassword = () => {
+  useEffect(() => {
+    if (!showActions) return;
+    const handleOutside = (e) => {
+      if (cardRef.current && !cardRef.current.contains(e.target)) {
+        setShowActions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("touchstart", handleOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("touchstart", handleOutside);
+    };
+  }, [showActions]);
+
+  const handleCopyPassword = (e) => {
+    e.stopPropagation();
     navigator.clipboard.writeText(credential.password);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleCardClick = () => {
+    if (window.matchMedia("(hover: none)").matches) {
+      setShowActions((prev) => !prev);
+    }
+  };
+
+  const actionsVisible = `flex gap-0.5 transition-opacity duration-150 flex-shrink-0 ml-2 ${
+    showActions ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+  }`;
+
   return (
-    <Card className="card-apple overflow-hidden group transition-all duration-200">
+    <Card ref={cardRef} className="card-apple overflow-hidden group transition-all duration-200" onClick={handleCardClick}>
       <CardContent className="p-4">
         {/* Header: icon + label/url + hover actions */}
         <div className="flex items-start justify-between mb-3">
@@ -91,16 +119,16 @@ export function CredentialCard({ credential, onEdit, onDelete, onCopy }) {
             </div>
           </div>
 
-          <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0 ml-2">
+          <div className={actionsVisible}>
             <button
-              onClick={() => onEdit(credential)}
+              onClick={(e) => { e.stopPropagation(); onEdit(credential); }}
               className="h-7 w-7 rounded-lg flex items-center justify-center text-gray-500 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"
               title="Edit"
             >
               <Edit3 className="w-3.5 h-3.5" />
             </button>
             <button
-              onClick={() => onDelete(credential.id)}
+              onClick={(e) => { e.stopPropagation(); onDelete(credential.id); }}
               className="h-7 w-7 rounded-lg flex items-center justify-center text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
               title="Delete"
             >
@@ -115,7 +143,8 @@ export function CredentialCard({ credential, onEdit, onDelete, onCopy }) {
             <User className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
             <p className="text-xs text-gray-300 truncate flex-1">{credential.username}</p>
             <button
-              onClick={async () => {
+              onClick={async (e) => {
+                e.stopPropagation();
                 await navigator.clipboard.writeText(credential.username);
                 onCopy?.("Username copied");
               }}
@@ -133,7 +162,7 @@ export function CredentialCard({ credential, onEdit, onDelete, onCopy }) {
             </p>
             <div className="flex gap-0.5 flex-shrink-0">
               <button
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={(e) => { e.stopPropagation(); setShowPassword(!showPassword); }}
                 className="h-6 w-6 rounded-md flex items-center justify-center text-gray-500 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"
               >
                 {showPassword ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
@@ -179,19 +208,14 @@ export function AddCredentialDialog({
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!open) return;
+    setError("");
     if (editingCredential) {
-      setFormData(
-        editingCredential || {
-          label: "",
-          url: "",
-          username: "",
-          password: "",
-        },
-      );
-    } else if (!open) {
-      setFormData({ label: "", url: "", username: "", password: "" });
+      setFormData({ label: "", url: "", username: "", password: "", note: "", ...editingCredential });
+    } else {
+      setFormData({ label: "", url: "", username: "", password: "", note: "" });
     }
-  }, [editingCredential, open]);
+  }, [open, editingCredential]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
