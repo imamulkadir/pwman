@@ -254,7 +254,7 @@ export default function VaultPage() {
 
   // Vault unlocked - Dashboard
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen">
       <Header
         user={user}
         onSignOut={handleSignOut}
@@ -280,7 +280,7 @@ export default function VaultPage() {
           className="w-full"
         >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
-            <TabsList className="bg-white/80 backdrop-blur-sm border border-gray-200/50 shadow-sm">
+            <TabsList className="bg-gray-800/80 backdrop-blur-sm border border-gray-700/50 shadow-sm">
               <TabsTrigger
                 value="passwords"
                 className="flex items-center gap-2"

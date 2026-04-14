@@ -45,12 +45,12 @@ export function VaultSetup({ onCreateVault, loading, error }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="p-3 bg-blue-100 rounded-full">
-              <Lock className="w-8 h-8 text-blue-600" />
+            <div className="p-3 bg-blue-900/40 rounded-full">
+              <Lock className="w-8 h-8 text-blue-400" />
             </div>
           </div>
           <CardTitle className="text-2xl">Create Your Vault</CardTitle>
@@ -62,7 +62,7 @@ export function VaultSetup({ onCreateVault, loading, error }) {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {(error || localError) && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded flex gap-2 text-sm text-red-700">
+              <div className="p-3 bg-red-900/30 border border-red-700/50 rounded flex gap-2 text-sm text-red-400">
                 <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                 <span>{error || localError}</span>
               </div>
@@ -77,7 +77,7 @@ export function VaultSetup({ onCreateVault, loading, error }) {
                 onChange={(e) => setPassphrase(e.target.value)}
                 required
               />
-              <p className="text-xs text-gray-600 mt-1">
+              <p className="text-xs text-gray-400 mt-1">
                 • At least 8 characters
                 <br />• Remember this - it cannot be recovered
                 <br />• Never share your passphrase with anyone
@@ -100,11 +100,11 @@ export function VaultSetup({ onCreateVault, loading, error }) {
             </Button>
           </form>
 
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <p className="text-xs text-blue-900 font-medium mb-2">
+          <div className="mt-6 p-4 bg-blue-900/20 rounded-lg border border-blue-700/40">
+            <p className="text-xs text-blue-300 font-medium mb-2">
               Security Notice:
             </p>
-            <p className="text-xs text-blue-800">
+            <p className="text-xs text-blue-400">
               Your passphrase is used to encrypt all your data locally. We never
               store your passphrase. If you forget it, your vault cannot be
               recovered.
@@ -143,12 +143,12 @@ export function VaultUnlock({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="p-3 bg-blue-100 rounded-full">
-              <Lock className="w-8 h-8 text-blue-600" />
+            <div className="p-3 bg-blue-900/40 rounded-full">
+              <Lock className="w-8 h-8 text-blue-400" />
             </div>
           </div>
           <CardTitle className="text-2xl">Unlock Your Vault</CardTitle>
@@ -160,7 +160,7 @@ export function VaultUnlock({
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {(error || localError) && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded flex gap-2 text-sm text-red-700">
+              <div className="p-3 bg-red-900/30 border border-red-700/50 rounded flex gap-2 text-sm text-red-400">
                 <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                 <span>{error || localError}</span>
               </div>
@@ -187,9 +187,9 @@ export function VaultUnlock({
             </Button>
           </form>
 
-          <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
-            <p className="text-xs text-amber-900 font-medium mb-1">Tip:</p>
-            <p className="text-xs text-amber-800">
+          <div className="mt-6 p-4 bg-amber-900/20 rounded-lg border border-amber-700/40">
+            <p className="text-xs text-amber-300 font-medium mb-1">Tip:</p>
+            <p className="text-xs text-amber-400">
               Your vault is encrypted with your passphrase. Decryption happens
               only on your device.
             </p>

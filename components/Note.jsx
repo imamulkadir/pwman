@@ -41,7 +41,7 @@ export function NoteCard({ note, onEdit, onDelete }) {
         <div className="flex-1 mb-4">
           {note.title && (
             <div className="flex items-center gap-2 mb-3">
-              <FileText className="w-4 h-4 text-gray-600" />
+              <FileText className="w-4 h-4 text-gray-500" />
               <h3 className="font-semibold text-gray-900 line-clamp-2">
                 {note.title}
               </h3>
@@ -150,7 +150,7 @@ export function AddNoteDialog({
         <DialogBody>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+              <div className="p-3 bg-red-900/30 border border-red-700/50 rounded text-sm text-red-400">
                 {error}
               </div>
             )}
@@ -178,7 +178,7 @@ export function AddNoteDialog({
                 }
                 required
                 rows={6}
-                className="input-apple w-full px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent resize-none"
+                className="input-apple w-full px-4 py-3 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent resize-none"
               />
             </div>
 
@@ -195,8 +195,8 @@ export function AddNoteDialog({
                     onClick={() => setFormData({ ...formData, color })}
                     className={`w-8 h-8 rounded-full border-2 transition-all duration-200 ${
                       formData.color === color
-                        ? "border-gray-800 scale-110 shadow-md"
-                        : "border-gray-300 hover:scale-105"
+                        ? "border-gray-400 scale-110 shadow-md"
+                        : "border-gray-600 hover:scale-105"
                     }`}
                     style={{ backgroundColor: color }}
                   />

@@ -49,7 +49,7 @@ export const DialogContent = ({
 export const DialogHeader = ({ className, children, ...props }) => {
   return (
     <div
-      className={`p-6 border-b border-gray-200/50 ${className || ""}`}
+      className={`p-6 border-b border-gray-700/50 ${className || ""}`}
       {...props}
     >
       {children}
@@ -60,7 +60,7 @@ export const DialogHeader = ({ className, children, ...props }) => {
 export const DialogTitle = ({ className, children, ...props }) => {
   return (
     <h2
-      className={`text-lg font-semibold text-gray-900 ${className || ""}`}
+      className={`text-lg font-semibold text-gray-100 ${className || ""}`}
       {...props}
     >
       {children}
@@ -70,7 +70,7 @@ export const DialogTitle = ({ className, children, ...props }) => {
 
 export const DialogDescription = ({ className, children, ...props }) => {
   return (
-    <p className={`text-sm text-gray-600 ${className || ""}`} {...props}>
+    <p className={`text-sm text-gray-400 ${className || ""}`} {...props}>
       {children}
     </p>
   );
@@ -87,7 +87,7 @@ export const DialogBody = ({ className, children, ...props }) => {
 export const DialogFooter = ({ className, children, ...props }) => {
   return (
     <div
-      className={`p-6 border-t border-gray-200/50 flex gap-3 justify-end ${className || ""}`}
+      className={`p-6 border-t border-gray-700/50 flex gap-3 justify-end ${className || ""}`}
       {...props}
     >
       {children}

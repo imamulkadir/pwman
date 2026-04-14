@@ -18,11 +18,11 @@ export const Button = React.forwardRef(
     const variants = {
       default: "btn-apple",
       outline:
-        "border border-gray-300 bg-white/80 text-gray-900 hover:bg-gray-50/80 focus:ring-gray-500 backdrop-blur-sm",
+        "border border-gray-600 bg-gray-800/80 text-gray-200 hover:bg-gray-700/80 focus:ring-gray-500 backdrop-blur-sm",
       secondary:
-        "bg-gray-100/80 text-gray-900 hover:bg-gray-200/80 focus:ring-gray-400 backdrop-blur-sm",
+        "bg-gray-700/80 text-gray-200 hover:bg-gray-600/80 focus:ring-gray-400 backdrop-blur-sm",
       destructive: "bg-red-500 text-white hover:bg-red-600 focus:ring-red-500",
-      ghost: "hover:bg-gray-100/80 text-gray-900 focus:ring-gray-400",
+      ghost: "hover:bg-gray-700/80 text-gray-300 focus:ring-gray-400",
     };
 
     const sizes = {

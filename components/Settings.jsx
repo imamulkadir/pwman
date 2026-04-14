@@ -37,25 +37,25 @@ export function SettingsDialog({
         <DialogBody>
           <div className="space-y-6">
             {/* Account Section */}
-            <div className="border-b border-gray-200 pb-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Account</h3>
+            <div className="border-b border-gray-700 pb-6">
+              <h3 className="font-semibold text-gray-100 mb-4">Account</h3>
               <div className="space-y-3">
                 <div>
                   <p className="text-sm text-gray-600">Email</p>
-                  <p className="font-mono text-sm text-gray-900">
+                  <p className="font-mono text-sm text-gray-100">
                     {user?.email}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Name</p>
-                  <p className="text-sm text-gray-900">{user?.displayName}</p>
+                  <p className="text-sm text-gray-100">{user?.displayName}</p>
                 </div>
               </div>
             </div>
 
             {/* Security Section */}
-            <div className="border-b border-gray-200 pb-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Security</h3>
+            <div className="border-b border-gray-700 pb-6">
+              <h3 className="font-semibold text-gray-100 mb-4">Security</h3>
               <div className="space-y-3">
                 <div className="p-3 bg-blue-50 border border-blue-200 rounded flex gap-3">
                   <ShieldAlert className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
@@ -81,7 +81,7 @@ export function SettingsDialog({
 
             {/* Danger Zone */}
             <div>
-              <h3 className="font-semibold text-gray-900 mb-4 text-red-600">
+              <h3 className="font-semibold text-red-500 mb-4">
                 Danger Zone
               </h3>
               <Button

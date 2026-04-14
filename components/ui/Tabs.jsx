@@ -23,7 +23,7 @@ export const Tabs = ({ defaultValue, onValueChange, children, className }) => {
 export const TabsList = ({ children, className }) => {
   return (
     <div
-      className={`flex rounded-xl p-1 bg-gray-100/50 backdrop-blur-sm ${className || ""}`}
+      className={`flex rounded-xl p-1 bg-gray-800/50 backdrop-blur-sm ${className || ""}`}
     >
       {children}
     </div>
@@ -39,8 +39,8 @@ export const TabsTrigger = ({ value, children, className }) => {
       onClick={() => setActiveTab?.(value)}
       className={`px-4 py-2.5 font-medium text-sm rounded-lg transition-all duration-200 ${
         activeTab === value
-          ? "bg-white text-gray-900 shadow-sm"
-          : "text-gray-600 hover:text-gray-900 hover:bg-white/50"
+          ? "bg-gray-700 text-gray-100 shadow-sm"
+          : "text-gray-400 hover:text-gray-200 hover:bg-gray-700/50"
       } ${className || ""}`}
     >
       {children}
