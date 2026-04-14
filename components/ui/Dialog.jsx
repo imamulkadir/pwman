@@ -1,15 +1,38 @@
-export const Dialog = ({ open, onOpenChange, children }) => {
+import { useEffect, useState } from "react";
+
+export const Dialog = ({ open, onOpenChange, isDirty = false, children }) => {
+  const [highlighted, setHighlighted] = useState(false);
+
+  // Lock background scroll while open
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
+  const handleBackdropClick = () => {
+    if (isDirty) {
+      setHighlighted(true);
+      setTimeout(() => setHighlighted(false), 2400);
+    } else {
+      onOpenChange(false);
+    }
+  };
+
   if (!open) return null;
 
   return (
     <>
       <div
         className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
-        onClick={() => onOpenChange(false)}
+        onClick={handleBackdropClick}
       />
       <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
         <div
-          className="card-apple max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto pointer-events-auto"
+          className={`card-apple no-lift max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto pointer-events-auto ${highlighted ? "dialog-highlight" : ""}`}
           role="dialog"
         >
           {typeof children === "function"
@@ -49,7 +72,7 @@ export const DialogContent = ({
 export const DialogHeader = ({ className, children, ...props }) => {
   return (
     <div
-      className={`p-6 border-b border-gray-700/50 ${className || ""}`}
+      className={`px-5 py-3.5 border-b border-gray-700/50 ${className || ""}`}
       {...props}
     >
       {children}
@@ -78,7 +101,7 @@ export const DialogDescription = ({ className, children, ...props }) => {
 
 export const DialogBody = ({ className, children, ...props }) => {
   return (
-    <div className={`p-6 ${className || ""}`} {...props}>
+    <div className={`px-5 py-4 ${className || ""}`} {...props}>
       {children}
     </div>
   );
@@ -87,7 +110,7 @@ export const DialogBody = ({ className, children, ...props }) => {
 export const DialogFooter = ({ className, children, ...props }) => {
   return (
     <div
-      className={`p-6 border-t border-gray-700/50 flex gap-3 justify-end ${className || ""}`}
+      className={`px-5 py-3 border-t border-gray-700/50 flex gap-3 justify-end ${className || ""}`}
       {...props}
     >
       {children}

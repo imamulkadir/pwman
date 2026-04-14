@@ -43,6 +43,19 @@ body {
   transform: translateY(-1px);
 }
 
+.card-apple.no-lift:hover {
+  transform: none;
+}
+
+@keyframes dialogPulse {
+  0%, 100% { border-color: rgba(48, 54, 61, 0.8); }
+  20%, 60% { border-color: rgba(99, 102, 241, 0.9); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+}
+
+.dialog-highlight {
+  animation: dialogPulse 0.6s ease-in-out 0s, dialogPulse 0.6s ease-in-out 1.2s;
+}
+
 /* Button styles */
 .btn-apple {
   background: linear-gradient(135deg, #007aff 0%, #0056cc 100%);
@@ -83,7 +96,7 @@ body {
   background: rgba(13, 17, 23, 0.7);
   border: 1px solid rgba(48, 54, 61, 0.8);
   border-radius: 12px;
-  padding: 12px 16px;
+  padding: 9px 14px;
   transition: all 0.2s ease;
   backdrop-filter: blur(10px);
   color: #e6edf3;

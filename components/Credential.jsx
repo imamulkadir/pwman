@@ -188,6 +188,8 @@ export function CredentialCard({ credential, onEdit, onDelete, onCopy }) {
   );
 }
 
+const EMPTY_CREDENTIAL = { label: "", url: "", username: "", password: "", note: "" };
+
 export function AddCredentialDialog({
   open,
   onOpenChange,
@@ -207,14 +209,14 @@ export function AddCredentialDialog({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const isDirty = editingCredential
+    ? Object.keys(EMPTY_CREDENTIAL).some((k) => formData[k] !== (editingCredential[k] ?? ""))
+    : Object.values(formData).some(Boolean);
+
   useEffect(() => {
     if (!open) return;
     setError("");
-    if (editingCredential) {
-      setFormData({ label: "", url: "", username: "", password: "", note: "", ...editingCredential });
-    } else {
-      setFormData({ label: "", url: "", username: "", password: "", note: "" });
-    }
+    setFormData(editingCredential ? { ...EMPTY_CREDENTIAL, ...editingCredential } : { ...EMPTY_CREDENTIAL });
   }, [open, editingCredential]);
 
   const handleSubmit = async (e) => {
@@ -243,7 +245,7 @@ export function AddCredentialDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} isDirty={isDirty}>
       <DialogContent className="w-full">
         <DialogHeader>
           <DialogTitle>
@@ -251,7 +253,7 @@ export function AddCredentialDialog({
           </DialogTitle>
         </DialogHeader>
         <DialogBody>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {error && (
               <div className="p-3 bg-red-900/30 border border-red-700/50 rounded text-sm text-red-400">
                 {error}
@@ -318,8 +320,8 @@ export function AddCredentialDialog({
                 onChange={(e) =>
                   setFormData({ ...formData, note: e.target.value })
                 }
-                rows={3}
-                className="input-apple w-full px-4 py-3 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent resize-none"
+                rows={2}
+                className="input-apple w-full px-3.5 py-2.5 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent resize-none"
               />
             </div>
 

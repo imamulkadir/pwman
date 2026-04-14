@@ -103,6 +103,8 @@ export function NoteCard({ note, onEdit, onDelete }) {
   );
 }
 
+const EMPTY_NOTE = { title: "", content: "", color: "#FFFBEA" };
+
 export function AddNoteDialog({
   open,
   onOpenChange,
@@ -120,14 +122,14 @@ export function AddNoteDialog({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const isDirty = editingNote
+    ? formData.title !== editingNote.title || formData.content !== editingNote.content
+    : Boolean(formData.title || formData.content);
+
   useEffect(() => {
     if (!open) return;
     setError("");
-    if (editingNote) {
-      setFormData({ title: "", content: "", color: "#FFFBEA", ...editingNote });
-    } else {
-      setFormData({ title: "", content: "", color: "#FFFBEA" });
-    }
+    setFormData(editingNote ? { ...EMPTY_NOTE, ...editingNote } : { ...EMPTY_NOTE });
   }, [open, editingNote]);
 
   const handleSubmit = async (e) => {
@@ -156,13 +158,13 @@ export function AddNoteDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} isDirty={isDirty}>
       <DialogContent className="w-full">
         <DialogHeader>
           <DialogTitle>{editingNote ? "Edit Note" : "Add Note"}</DialogTitle>
         </DialogHeader>
         <DialogBody>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {error && (
               <div className="p-3 bg-red-900/30 border border-red-700/50 rounded text-sm text-red-400">
                 {error}
@@ -191,8 +193,8 @@ export function AddNoteDialog({
                   setFormData({ ...formData, content: e.target.value })
                 }
                 required
-                rows={6}
-                className="input-apple w-full px-4 py-3 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent resize-none"
+                rows={5}
+                className="input-apple w-full px-3.5 py-2.5 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent resize-none"
               />
             </div>
 
