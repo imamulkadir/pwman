@@ -148,6 +148,12 @@ export function CredentialCard({ credential, onEdit, onDelete, onCopy }) {
             </div>
           </div>
         </div>
+
+        {credential.note && (
+          <p className="mt-2.5 text-xs text-gray-500 leading-relaxed border-t border-gray-700/50 pt-2.5 line-clamp-2">
+            {credential.note}
+          </p>
+        )}
       </CardContent>
     </Card>
   );
@@ -166,6 +172,7 @@ export function AddCredentialDialog({
       url: "",
       username: "",
       password: "",
+      note: "",
     },
   );
   const [loading, setLoading] = useState(false);
@@ -275,6 +282,20 @@ export function AddCredentialDialog({
                   setFormData({ ...formData, password: e.target.value })
                 }
                 required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="note">Note (optional)</Label>
+              <textarea
+                id="note"
+                placeholder="Any extra info about this credential..."
+                value={formData.note}
+                onChange={(e) =>
+                  setFormData({ ...formData, note: e.target.value })
+                }
+                rows={3}
+                className="input-apple w-full px-4 py-3 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent resize-none"
               />
             </div>
 
