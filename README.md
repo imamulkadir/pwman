@@ -1,71 +1,114 @@
-﻿# pw-man
+# pw-man
 
-A secure password manager web app with client-side encryption, notes support, and installable PWA behavior.
+A zero-knowledge password manager built with Next.js. All encryption and decryption happens in your browser — the server never sees your plaintext data.
 
-## Overview
+---
 
-- **Google authentication** via Firebase
-- **Master passphrase vault** for client-side encryption
-- **Encrypted credentials** with add/edit/delete/copy/search
-- **Notes module** with color-coded notes
-- **Responsive UI** built with Next.js and Tailwind CSS
-- **PWA installable** with offline-ready service worker in production
-- **Zero-knowledge design**: only encrypted blobs are stored in Firestore
+## How it works
+
+1. Sign in with Google
+2. Create a vault by setting a master passphrase
+3. Your passphrase is run through **PBKDF2** (100,000 iterations, SHA-256) to derive an **AES-GCM 256-bit** key — entirely in the browser via the Web Crypto API
+4. Credentials and notes are encrypted client-side before being stored in Firestore
+5. The encryption key lives only in memory for the duration of your session and is never sent to any server
+
+---
 
 ## Features
 
-- Google Sign-In authentication
-- Master passphrase vault creation and unlock
-- Client-side AES-GCM encryption
-- Password management with secure copy and visibility toggle
-- Notes support with title, content, and color
-- Search credentials and notes
-- Responsive layout for mobile/tablet/desktop
-- PWA support with manifest and service worker
+- Google Sign-In via Firebase Authentication
+- Master passphrase vault with client-side key derivation (PBKDF2 + AES-GCM)
+- Password management — add, edit, delete, search, copy username/password
+- Site favicon auto-detection on credential cards
+- Secure notes with color labels
+- Full-text search across credentials and notes
+- Toast notifications for all actions
+- Installable PWA with service worker (production only)
+- Dark UI
+
+---
 
 ## Tech Stack
 
-- Next.js 14
-- React 18
-- Tailwind CSS
-- Firebase Authentication
-- Firestore
-- Zustand for state management
-- Web Crypto API for encryption
-- next-pwa for Progressive Web App support
+| Layer      | Technology                            |
+| ---------- | ------------------------------------- |
+| Framework  | Next.js 14 (App Router)               |
+| UI         | React 18, Tailwind CSS, Lucide icons  |
+| Auth       | Firebase Authentication (Google)      |
+| Database   | Firestore (encrypted blobs only)      |
+| State      | Zustand                               |
+| Encryption | Web Crypto API — PBKDF2 + AES-GCM 256 |
+| PWA        | next-pwa + Workbox service worker     |
+
+---
+
+## Project structure
+
+```
+app/
+  page.jsx              # Sign-in page
+  vault/page.jsx        # Main vault dashboard
+  layout.jsx            # Root layout + PWA meta tags
+components/
+  Credential.jsx        # Credential card + add/edit dialog
+  Note.jsx              # Note card + add/edit dialog
+  VaultSetup.jsx        # Create vault / unlock vault screens
+  Settings.jsx          # Settings dialog
+  Layout.jsx            # Header, LoadingScreen, EmptyState, ErrorState
+  ui/                   # Button, Card, Dialog, Input, Tabs, Toast, Label, PasswordInput
+hooks/
+  useVault.js           # useAuth, useVault, useAddCredential, useEditCredential, ...
+lib/
+  crypto/encryption.js  # PBKDF2 key derivation, AES-GCM encrypt/decrypt
+  vault/vaultManager.js # initializeVault, unlockVault, saveCredentials, saveNotes
+  firebase/
+    config.js           # Firebase app init
+    auth.js             # watchAuthState, signOut
+    firestore.js        # getVaultData, saveVaultData, getUserDocument
+store/
+  vault.js              # Zustand stores — useAuthStore, useVaultStore
+public/
+  sw.js                 # Compiled Workbox service worker
+  manifest.webmanifest  # PWA manifest
+```
+
+---
 
 ## Setup
 
 ### 1. Install dependencies
 
-`ash
+```bash
 npm install
-`
+```
 
-### 2. Configure Firebase
+### 2. Create a Firebase project
 
-1. Create a Firebase project at https://console.firebase.google.com
-2. Enable **Google** Sign-In under Authentication > Sign-in method
-3. Create a Firestore database
-4. Add localhost to Firebase Authentication **Authorized domains**
-5. Create a local .env.local file with your Firebase config:
+1. Go to [console.firebase.google.com](https://console.firebase.google.com) and create a project
+2. Enable **Google** sign-in under **Authentication → Sign-in method**
+3. Create a **Firestore** database (start in production mode)
+4. Add `localhost` to **Authentication → Settings → Authorized domains**
 
-`nv
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-`
+### 3. Configure environment variables
 
-> Sensitive values in .env.local are ignored by Git.
+Create a `.env.local` file in the project root:
 
-### 3. Firestore security rules
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+```
 
-Use the following rules in Firestore to restrict access to each user's own data:
+Fill in the values from **Firebase → Project settings → Your apps → SDK setup and configuration**.
 
-`js
+### 4. Set Firestore security rules
+
+In the Firebase console under **Firestore → Rules**, apply these rules so each user can only access their own data:
+
+```js
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -78,68 +121,39 @@ service cloud.firestore {
     }
   }
 }
-`
+```
 
-### 4. Run locally
+### 5. Run locally
 
-`ash
+```bash
 npm run dev
-`
+```
 
-Open http://localhost:3000 and sign in with Google.
+Open [http://localhost:3000](http://localhost:3000).
 
-> 
-ext-pwa is disabled in development by default. PWA install behavior is available in production mode.
+> The PWA service worker is disabled in development mode. To test PWA install behavior, run a production build.
 
-### 5. Production build
+### 6. Production build
 
-`ash
+```bash
 npm run build
 npm start
-`
+```
 
-## Deployment to Vercel
+Deployments to Vercel work out of the box — just add the environment variables in the Vercel project settings.
 
-1. Push this repo to GitHub
-2. Create a new project on Vercel
-3. Connect the GitHub repository
-4. Set the same Firebase environment variables in Vercel
-5. Deploy
+---
 
-Vercel will automatically build the app using the included package.json and 
-ext.config.js.
+## Security notes
 
-## PWA Notes
+- The master passphrase is **never stored or transmitted** — it exists only in memory for key derivation
+- Firestore stores only `{ salt, iv, ciphertext }` — nothing readable without the passphrase
+- A wrong passphrase causes AES-GCM decryption to throw, so there is no silent data corruption
+- The encryption key is held in Zustand store memory only for the active session and cleared on sign-out
+- `.env.local` is git-ignored by default
 
-- public/manifest.webmanifest is included
-- public/icons/ contains install icons
-- 
-ext-pwa is configured in 
-ext.config.js
-- Service worker is enabled in production builds only
+---
 
-## Security
+## Author
 
-- Master passphrase is never stored on the server
-- Encryption happens entirely in the browser
-- Firestore stores only encrypted vault data
-- .env.local and db.txt are ignored by Git
-
-## Repository Hygiene
-
-The following files are excluded from version control:
-
-- .env.local
-- .env
-- db.txt
-- 
-ode_modules/
-- .next/
-
-## GitHub Push
-
-This repo is ready to be pushed to GitHub and connected to Vercel for deployment.
-
-## License
-
-MIT
+Built by [Imamul Kadir](https://github.com/imamulkadir)
