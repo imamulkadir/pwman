@@ -410,6 +410,7 @@ export default function VaultPage() {
         user={user}
         onSignOut={handleSignOut}
       />
+
     </div>
   );
 }
